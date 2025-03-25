@@ -1,0 +1,56 @@
+{
+  "Customer ID": "CUST001",
+  "Full Name": "John Doe",
+  "Date of Birth": "1999-05-15",
+  "Age": 25,
+  "Gender": "Male",
+  "Marital Status": "Single",
+  "Nationality": "American",
+  "Employment Status": "Salaried",
+  "Employer Name": "Tech Solutions Inc.",
+  "Annual Income (USD)": 150000,
+  "Tax Identification Number": "123-45-6789",
+  "Residential Address": "1234 Elm Street, San Francisco, CA",
+  "City": "San Francisco",
+  "State": "California",
+  "ZIP Code": 94107,
+  "Country": "USA",
+  "Phone Number": "+1-555-123-4567",
+  "Email Address": "john.doe@example.com",
+  "Bank Account Number": 9876543210,
+  "Bank Branch": "San Francisco Main",
+  "Bank IFSC Code": "WFBIUS6S",
+  "Credit Score": 780,
+  "KYC Status": "Verified",
+  "Verification Date": "2024-01-10",
+  "Document Type": "Passport",
+  "Document Number": "A12345678",
+  "Document Expiry": "2034-01-10",
+  "age_group": "early_career",
+  "location_insights": {
+    "cost_of_living": "medium",
+    "typical_activities": [
+      "Dining",
+      "Entertainment",
+      "Shopping"
+    ],
+    "market_segment": "suburban"
+  },
+  "typical_spending_patterns": {
+    "common_categories": [
+      "Dining",
+      "Entertainment",
+      "Shopping"
+    ],
+    "typical_merchants": [
+      "Restaurants",
+      "Retail Stores",
+      "Entertainment Venues"
+    ],
+    "spending_trends": [
+      "Online Shopping",
+      "Experiences",
+      "Health & Wellness"
+    ]
+  }
+}

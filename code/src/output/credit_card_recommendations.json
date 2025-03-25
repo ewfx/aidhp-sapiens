@@ -1,0 +1,34 @@
+{
+  "recommendations": [
+    {
+      "card_name": "Wells Fargo Autograph Card",
+      "reason": "The user's top spending categories align with the card's bonus rewards and their interests.",
+      "benefits": [
+        "3x points on dining, travel, gas & streaming"
+      ],
+      "annual_fee": "0 USD",
+      "credit_limit": "12000 USD",
+      "interest_rate": "19.99%"
+    },
+    {
+      "card_name": "Wells Fargo BILT Card",
+      "reason": "The user has significant spending in the subscription and streaming categories and the card's benefits align with their interests.",
+      "benefits": [
+        "2x points on travel & dining"
+      ],
+      "annual_fee": "0 USD",
+      "credit_limit": "9000 USD",
+      "interest_rate": "21.49%"
+    },
+    {
+      "card_name": "Wells Fargo Active Cash Card",
+      "reason": "The user's high income and total spending amount make the unlimited 2% cashback an attractive benefit.",
+      "benefits": [
+        "Unlimited 2% cashback on all purchases"
+      ],
+      "annual_fee": "0 USD",
+      "credit_limit": "10000 USD",
+      "interest_rate": "20.99%"
+    }
+  ]
+}

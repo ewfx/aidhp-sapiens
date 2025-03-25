@@ -1,0 +1,5 @@
+Card ID,Card Name,Network,Issued Date,Expiry Date,Credit Limit ($),Current Balance ($)
+CC001,Chase Sapphire Preferred,Visa,2023-06-15,2028-06-15,20000,1500
+CC002,American Express Gold,Amex,2022-11-10,2027-11-10,25000,2100
+CC003,Wells Fargo Active Cash,Mastercard,2024-02-20,2029-02-20,18000,1200
+CC004,Citi Double Cash,Mastercard,2021-09-05,2026-09-05,22000,1700
