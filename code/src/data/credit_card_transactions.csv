@@ -1,0 +1,101 @@
+Date,Card ID,Merchant,Category,Amount ($)
+2025-01-02,CC001,Amazon,Shopping,250.75
+2025-01-05,CC002,Netflix,Subscription,15.99
+2025-01-07,CC003,Uber,Transport,35.5
+2025-01-10,CC004,Nike Store,Fashion,120.0
+2025-01-12,CC001,Whole Foods,Grocery,80.25
+2025-01-15,CC002,Spotify,Subscription,9.99
+2025-01-17,CC003,AMC Theaters,Entertainment,30.0
+2025-01-20,CC004,Equinox Gym,Fitness,200.0
+2025-01-23,CC001,Starbucks,Dining,12.5
+2025-01-25,CC002,Best Buy,Electronics,450.0
+2025-01-25,CC002,Adidas,Grocery,33.4
+2025-01-15,CC004,Uber,Fitness,227.42
+2025-01-16,CC004,Apple,Fashion,96.76
+2025-01-14,CC002,Whole Foods,Subscription,278.26
+2025-01-19,CC001,Apple,Transport,19.56
+2025-01-14,CC003,Nike,Fitness,402.38
+2025-01-24,CC001,Amazon,Investment,302.85
+2025-01-12,CC001,Adidas,Investment,353.47
+2025-01-20,CC004,Spotify,Fitness,218.11
+2025-01-21,CC002,Target,Shopping,260.34
+2025-01-28,CC004,Nike,Dining,344.6
+2025-01-03,CC002,Uber,Subscription,397.6
+2025-01-18,CC002,Apple,Dining,154.28
+2025-01-08,CC001,Apple,Fitness,406.73
+2025-01-11,CC002,Amazon,Subscription,105.08
+2025-01-17,CC004,Spotify,Subscription,104.78
+2025-01-10,CC001,Target,Transport,405.55
+2025-01-11,CC001,Nike,Grocery,257.3
+2025-01-28,CC002,Whole Foods,Transport,50.0
+2025-01-13,CC002,Whole Foods,Investment,481.71
+2025-01-29,CC004,Uber,Shopping,172.15
+2025-01-16,CC002,Spotify,Fitness,129.93
+2025-01-10,CC004,Amazon,Transport,391.93
+2025-01-17,CC004,Uber,Fashion,156.08
+2025-01-09,CC001,Apple,Subscription,95.18
+2025-01-28,CC003,Apple,Entertainment,132.88
+2025-01-02,CC002,Uber,Transport,203.26
+2025-01-17,CC004,Nike,Entertainment,246.45
+2025-01-04,CC002,Amazon,Fashion,491.71
+2025-01-09,CC002,Netflix,Transport,65.25
+2025-01-22,CC004,Whole Foods,Transport,20.65
+2025-01-16,CC003,Whole Foods,Fashion,247.57
+2025-01-13,CC003,Amazon,Investment,480.31
+2025-01-30,CC003,AMC Theaters,Dining,245.76
+2025-01-02,CC001,Uber,Transport,88.96
+2025-01-05,CC001,Netflix,Dining,466.2
+2025-01-12,CC004,Spotify,Grocery,239.07
+2025-01-11,CC004,Whole Foods,Entertainment,315.88
+2025-01-29,CC002,Apple,Subscription,31.46
+2025-01-07,CC001,Amazon,Shopping,70.55
+2025-01-04,CC001,Target,Fashion,388.61
+2025-01-06,CC002,Amazon,Transport,122.13
+2025-01-20,CC004,Target,Investment,104.41
+2025-01-15,CC003,Uber,Dining,431.73
+2025-01-18,CC001,Amazon,Grocery,50.71
+2025-01-09,CC001,Amazon,Dining,312.75
+2025-01-06,CC004,Apple,Entertainment,282.86
+2025-01-19,CC003,Apple,Fitness,165.37
+2025-01-03,CC002,Whole Foods,Fitness,376.83
+2025-01-31,CC004,Nike,Fitness,310.38
+2025-01-16,CC004,Amazon,Dining,335.53
+2025-01-12,CC001,Netflix,Entertainment,415.49
+2025-01-21,CC001,Amazon,Entertainment,234.44
+2025-01-09,CC003,Target,Investment,61.73
+2025-01-15,CC002,Target,Transport,465.26
+2025-01-18,CC003,Apple,Fashion,485.51
+2025-01-29,CC004,Spotify,Transport,166.54
+2025-01-10,CC004,Target,Transport,405.05
+2025-01-29,CC002,Apple,Subscription,191.6
+2025-01-16,CC002,Amazon,Transport,287.18
+2025-01-23,CC003,AMC Theaters,Investment,375.64
+2025-01-18,CC002,Apple,Transport,19.62
+2025-01-30,CC004,Apple,Transport,197.11
+2025-01-21,CC002,Whole Foods,Fitness,233.19
+2025-01-01,CC002,Amazon,Fashion,394.57
+2025-01-06,CC001,Target,Entertainment,140.26
+2025-01-31,CC003,Adidas,Dining,479.83
+2025-01-28,CC001,Amazon,Fashion,335.5
+2025-01-05,CC004,Uber,Grocery,74.06
+2025-01-05,CC001,Apple,Shopping,70.87
+2025-01-10,CC004,Uber,Investment,181.77
+2025-01-10,CC004,Target,Fashion,271.19
+2025-01-18,CC002,Target,Subscription,215.92
+2025-01-24,CC001,Uber,Entertainment,339.59
+2025-01-14,CC004,AMC Theaters,Shopping,427.75
+2025-01-23,CC004,Spotify,Transport,377.67
+2025-01-06,CC002,Amazon,Dining,50.82
+2025-01-18,CC004,Nike,Shopping,368.05
+2025-01-11,CC002,Apple,Fitness,318.34
+2025-01-04,CC004,Netflix,Entertainment,245.12
+2025-01-17,CC002,Netflix,Investment,255.85
+2025-01-30,CC003,Uber,Fashion,195.59
+2025-01-20,CC003,Amazon,Investment,64.78
+2025-01-29,CC004,Amazon,Grocery,426.38
+2025-01-05,CC002,Spotify,Shopping,330.72
+2025-01-30,CC001,Whole Foods,Entertainment,116.8
+2025-01-07,CC002,Uber,Investment,336.72
+2025-01-01,CC001,Amazon,Investment,267.76
+2025-01-13,CC003,Apple,Entertainment,477.68
+2025-01-01,CC004,Netflix,Transport,297.16
