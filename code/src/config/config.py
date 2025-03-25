@@ -25,14 +25,6 @@ ANALYSIS_SETTINGS = {
     }
 }
 
-# LLM settings
-LLM_SETTINGS = {
-    "model": "gpt-4-turbo-preview",
-    "temperature": 0.7,
-    "max_tokens": 1000,
-    "email_max_tokens": 800
-}
-
 # Output settings
 OUTPUT_SETTINGS = {
     "insights_file": "insights.txt",
