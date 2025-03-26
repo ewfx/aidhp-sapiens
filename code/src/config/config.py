@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 # Project paths
@@ -24,14 +23,6 @@ ANALYSIS_SETTINGS = {
         "subscription": 0.2,  # 20% potential optimization
         "impulse_purchases": 0.15  # 15% potential reduction
     }
-}
-
-# LLM settings
-LLM_SETTINGS = {
-    "model": "gpt-4-turbo-preview",
-    "temperature": 0.7,
-    "max_tokens": 1000,
-    "email_max_tokens": 800
 }
 
 # Output settings
