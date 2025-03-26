@@ -205,8 +205,8 @@ Developing This project was an exciting learning experience, but as new learners
    python main.py
     #Load all your financial data
     #Analyze spending patterns
-    Generate personalized recommendations
-   Save results in the output directory
+    #Generate personalized recommendations
+    #Save results in the output directory
    ```
    
 ## 🏠 Tech Stack
