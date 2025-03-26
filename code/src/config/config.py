@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 # Project paths
@@ -32,16 +31,10 @@ ANALYSIS_SETTINGS = {
     }
 }
 
-# LLM settings
-LLM_SETTINGS = {
-    "model": "gpt-4-turbo-preview",
-    "temperature": 0.7,
-    "max_tokens": 1000,
-    "email_max_tokens": 800
-}
 
 # Model paths
 LLM_MODEL_PATH = MODELS_DIR / "mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+
 
 # Output settings
 OUTPUT_SETTINGS = {
