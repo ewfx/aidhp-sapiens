@@ -4,6 +4,7 @@ import logging
 from typing import Dict, List, Any, Optional
 import json
 from src.utils.logger import setup_logger
+from config.config import DATA_FILES
 
 # ANSI color codes
 BLUE = "\033[94m"
@@ -11,8 +12,6 @@ GREEN = "\033[92m"
 YELLOW = "\033[93m"
 RED = "\033[91m"
 END = "\033[0m"
-
-from src.config import DATA_FILES
 
 # Set up logging
 logger = setup_logger(__name__)
@@ -30,19 +29,28 @@ class FinancialDataLoader:
         self.credit_cards = None
         self.loans = None
         self.credit_card_list = None
-        self.data_dir = Path("data")
-        self.data_dir.mkdir(exist_ok=True)
-        logger.debug("Data directory initialized")
+        logger.debug("Data loader initialized")
 
     def load_all_data(self) -> Dict[str, Any]:
         """Load all financial data from various sources."""
         logger.info("Loading all financial data")
         try:
+            # Load social media data as DataFrame
+            social_media_df = pd.read_csv(DATA_FILES["social_media"]) if DATA_FILES["social_media"].exists() else pd.DataFrame()
+            
+            # Load KYC details
+            kyc_details = self._load_kyc_details()
+            
             data = {
-                'credit_cards': self._load_credit_cards(),
-                'spending_data': self._load_spending_data(),
-                'kyc_details': self._load_kyc_details(),
-                'social_media': self._load_social_media_data()
+                'transactions': self._load_transaction_data(DATA_FILES["transactions"]),
+                'credit_card_transactions': self._load_transaction_data(DATA_FILES["credit_card_transactions"]),
+                'social_media': social_media_df,
+                'kyc': kyc_details,  # Pass KYC details directly
+                'receiver_categories': self._load_receiver_categories(),
+                'credit_cards': self._load_credit_cards_df(),
+                'loans': self._load_loans(),
+                'credit_card_list': self._load_credit_card_list(),
+                'emails': self._load_emails()
             }
             logger.info("Successfully loaded all financial data")
             return data
@@ -54,7 +62,7 @@ class FinancialDataLoader:
         """Load credit cards data from CSV file."""
         logger.debug("Loading credit cards data")
         try:
-            file_path = self.data_dir / "credit_cards.csv"
+            file_path = DATA_FILES["credit_card_list"]
             if not file_path.exists():
                 logger.warning(f"Credit cards file not found: {file_path}")
                 return []
@@ -72,13 +80,13 @@ class FinancialDataLoader:
         """Load spending data from JSON file."""
         logger.debug("Loading spending data")
         try:
-            file_path = self.data_dir / "spending_data.json"
+            file_path = DATA_FILES["transactions"]
             if not file_path.exists():
                 logger.warning(f"Spending data file not found: {file_path}")
                 return {}
                 
-            with open(file_path, 'r') as f:
-                spending_data = json.load(f)
+            df = pd.read_csv(file_path)
+            spending_data = df.to_dict('records')
             logger.info("Loaded spending data successfully")
             return spending_data
             
@@ -87,38 +95,49 @@ class FinancialDataLoader:
             return {}
 
     def _load_kyc_details(self) -> Dict[str, Any]:
-        """Load KYC details from JSON file."""
+        """Load KYC details from CSV file."""
         logger.debug("Loading KYC details")
         try:
-            file_path = self.data_dir / "kyc_details.json"
+            file_path = DATA_FILES["kyc"]
             if not file_path.exists():
                 logger.warning(f"KYC details file not found: {file_path}")
                 return {}
                 
-            with open(file_path, 'r') as f:
-                kyc_details = json.load(f)
-            logger.info("Loaded KYC details successfully")
-            return kyc_details
+            df = pd.read_csv(file_path)
+            # Convert the DataFrame to a dictionary, handling both single and multiple rows
+            if len(df) > 0:
+                kyc_details = df.iloc[0].to_dict()  # Take first row if multiple exist
+                # Convert numeric columns
+                numeric_columns = ['Age', 'Income', 'Credit Score']
+                for col in numeric_columns:
+                    if col in kyc_details:
+                        try:
+                            kyc_details[col] = float(kyc_details[col])
+                        except (ValueError, TypeError):
+                            pass
+                logger.info("Loaded KYC details successfully")
+                return kyc_details
+            return {}
             
         except Exception as e:
             logger.error(f"Error loading KYC details: {str(e)}")
             return {}
 
     def _load_social_media_data(self, file_path: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Load social media data from JSON file."""
+        """Load social media data from CSV file."""
         logger.debug("Loading social media data")
         try:
             if file_path:
                 path = Path(file_path)
             else:
-                path = self.data_dir / "social_media_posts.json"
+                path = DATA_FILES["social_media"]
                 
             if not path.exists():
                 logger.warning(f"Social media data file not found: {path}")
                 return []
                 
-            with open(path, 'r') as f:
-                social_data = json.load(f)
+            df = pd.read_csv(path)
+            social_data = df.to_dict('records')
             logger.info(f"Loaded {len(social_data)} social media posts")
             return social_data
             
@@ -158,7 +177,7 @@ class FinancialDataLoader:
     def _load_credit_cards_df(self) -> pd.DataFrame:
         """Load credit card details from CSV file."""
         try:
-            df = pd.read_csv(DATA_FILES["credit_cards"])
+            df = pd.read_csv(DATA_FILES["available_credit_cards"])
             # Convert numeric columns
             numeric_columns = ['Annual Fee (USD)', 'Interest Rate (%)']
             for col in numeric_columns:
@@ -172,7 +191,7 @@ class FinancialDataLoader:
     def _load_loans(self) -> pd.DataFrame:
         """Load loan details from CSV file."""
         try:
-            df = pd.read_csv(DATA_FILES["loans"])
+            df = pd.read_csv(DATA_FILES["available_loans"])
             # Convert numeric columns
             numeric_columns = ['Interest Rate (%)', 'Loan Amount (USD)', 'Monthly EMI (USD)']
             for col in numeric_columns:

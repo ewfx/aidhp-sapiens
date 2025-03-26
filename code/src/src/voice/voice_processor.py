@@ -136,22 +136,22 @@ class VoiceProcessor:
         """Load user data from JSON files."""
         logger.debug("Loading user data from JSON files")
         try:
-            data_dir = Path("data")
+            output_dir = Path("output")
             
             # Load spending data
-            spending_path = data_dir / "spending_data.json"
+            spending_path = output_dir / "spending_analysis.json"
             logger.debug(f"Loading spending data from {spending_path}")
             with open(spending_path, 'r') as f:
                 spending_data = json.load(f)
                 
             # Load KYC details
-            kyc_path = data_dir / "kyc_details.json"
+            kyc_path = output_dir / "kyc_details.json"
             logger.debug(f"Loading KYC details from {kyc_path}")
             with open(kyc_path, 'r') as f:
                 kyc_details = json.load(f)
                 
             # Load credit card recommendations
-            credit_path = data_dir / "credit_card_recommendations.json"
+            credit_path = output_dir / "credit_card_recommendations.json"
             logger.debug(f"Loading credit card recommendations from {credit_path}")
             with open(credit_path, 'r') as f:
                 credit_recommendations = json.load(f)

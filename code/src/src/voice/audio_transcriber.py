@@ -8,6 +8,7 @@ import warnings
 import speech_recognition as sr
 from typing import Optional
 from src.utils.logger import setup_logger
+from pydub import AudioSegment
 
 # Set up logging
 logger = setup_logger(__name__)
@@ -76,6 +77,16 @@ class AudioTranscriber:
         """
         logger.info(f"Starting transcription of audio file: {audio_file}")
         try:
+            # Convert M4A or MP3 to WAV if needed
+            audio_path = Path(audio_file)
+            if audio_path.suffix.lower() in ['.m4a', '.mp3']:
+                logger.debug(f"Converting {audio_path.suffix.upper()} to WAV format")
+                wav_file = audio_path.with_suffix('.wav')
+                audio = AudioSegment.from_file(audio_file)
+                audio.export(wav_file, format="wav")
+                audio_file = str(wav_file)
+                logger.debug("Conversion completed")
+            
             # Load audio file
             logger.debug("Loading audio file")
             with sr.AudioFile(audio_file) as source:
@@ -86,6 +97,12 @@ class AudioTranscriber:
             logger.debug("Performing transcription")
             text = self.recognizer.recognize_google(audio)
             logger.info("Transcription completed successfully")
+            
+            # Clean up temporary WAV file if it was created
+            if audio_path.suffix.lower() in ['.m4a', '.mp3'] and wav_file.exists():
+                wav_file.unlink()
+                logger.debug("Temporary WAV file removed")
+            
             return text
             
         except sr.UnknownValueError:

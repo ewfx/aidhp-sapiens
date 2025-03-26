@@ -3,7 +3,7 @@ from pathlib import Path
 from llama_cpp import Llama
 import json
 import pandas as pd
-from src.config import LLM_MODEL_PATH
+from config.config import LLM_MODEL_PATH
 from termcolor import colored
 from src.utils.logger import setup_logger
 
@@ -16,29 +16,34 @@ class LLMInteraction:
         try:
             self.llm = Llama(
                 model_path=str(LLM_MODEL_PATH),
-                n_ctx=1024,  # Minimal context window
-                n_threads=2,  # Minimal threads
+                n_ctx=4096,  # Increased context window
+                n_threads=4,  # Increased threads
                 n_gpu_layers=0,  # Disable GPU
-                verbose=False,  # Reduce verbosity
+                verbose=True,  # Enable verbosity for debugging
                 use_mlock=True,  # Lock memory
-                use_mmap=False  # Disable memory mapping
+                use_mmap=True  # Enable memory mapping
             )
             logger.info("Mistral model initialized successfully!")
         except Exception as e:
             logger.error(f"Error initializing Mistral model: {str(e)}")
             raise
         
-    def _generate_response(self, prompt: str, max_tokens: int = 1024) -> str:
+    def _generate_response(self, prompt: str, max_tokens: int = 2048) -> str:
         """Generate response using Mistral model."""
         logger.debug(f"Generating response with max_tokens={max_tokens}")
         try:
+            # Add system message to guide the model
+            system_message = "You are a helpful AI assistant that provides recommendations in JSON format. Always respond with valid JSON."
+            full_prompt = f"{system_message}\n\n{prompt}"
+            
             response = self.llm(
-                prompt,
+                full_prompt,
                 max_tokens=max_tokens,
-                temperature=0.7,
-                top_p=0.95,
+                temperature=0.3,  # Lower temperature for more consistent output
+                top_p=0.9,
                 echo=False,
-                stop=["</s>", "Human:", "Assistant:"]
+                stop=["</s>", "Human:", "Assistant:"],
+                repeat_penalty=1.1  # Add repeat penalty to avoid loops
             )
             content = response['choices'][0]['text'].strip()
             
@@ -48,11 +53,14 @@ class LLMInteraction:
                 start = content.find('{')
                 end = content.rfind('}') + 1
                 if start >= 0 and end > start:
-                    logger.debug("Successfully extracted JSON from response")
-                    return content[start:end]
+                    json_str = content[start:end]
+                    # Validate JSON before returning
+                    json.loads(json_str)
+                    logger.debug("Successfully extracted and validated JSON from response")
+                    return json_str
                 return content
-            except Exception as e:
-                logger.warning(f"Error extracting JSON from response: {str(e)}")
+            except json.JSONDecodeError as e:
+                logger.warning(f"Error extracting/validating JSON from response: {str(e)}")
                 return content
         except Exception as e:
             logger.error(f"Error generating response: {str(e)}")
@@ -62,25 +70,25 @@ class LLMInteraction:
         """Generate product recommendations based on user data."""
         logger.info("Generating product recommendations")
         try:
-            # Convert credit cards data to the expected format
-            credit_cards = []
-            if 'credit_cards' in available_products:
-                for card in available_products['credit_cards']:
-                    credit_cards.append({
-                        "name": card['Credit Card Name'],
-                        "annual_fee": float(card['Annual Fee (USD)']),
-                        "credit_limit": float(card['Credit Limit (USD)']),
-                        "interest_rate": float(card['Interest Rate (%)']),
-                        "benefits": card['Benefits'].split(','),
-                        "rewards_rate": card['Rewards & Cashback'],
-                        "other_perks": card['Other Perks'].split(',') if card['Other Perks'] else []
-                    })
-                logger.debug(f"Processed {len(credit_cards)} credit cards")
+            # Get user behavior insights
+            behavior_insights = []
+            if 'spending_by_category' in spending_data:
+                top_category = spending_data.get('max_spending_category', '')
+                behavior_insights.append(f"Your highest spending category is {top_category}")
+            
+            if 'average_transaction_amount' in spending_data:
+                behavior_insights.append(f"Your average transaction amount is ${float(spending_data['average_transaction_amount']):.2f}")
+            
+            # Calculate average monthly spending from monthly_spending data
+            if 'monthly_spending' in spending_data:
+                monthly_values = list(spending_data['monthly_spending'].values())
+                avg_monthly_spend = sum(monthly_values) / len(monthly_values) if monthly_values else 0
+                behavior_insights.append(f"Your average monthly spending is ${float(avg_monthly_spend):.2f}")
 
             # Get top merchants list
             top_merchants = []
-            if 'top_merchants' in spending_data:
-                top_merchants = [merchant['merchant'] for merchant in spending_data['top_merchants']]
+            if 'top_merchants_by_spend' in spending_data:
+                top_merchants = list(spending_data['top_merchants_by_spend'].keys())
                 logger.debug(f"Found {len(top_merchants)} top merchants")
 
             # Get spending categories
@@ -90,36 +98,62 @@ class LLMInteraction:
                 logger.debug(f"Found {len(spending_categories)} spending categories")
 
             # Construct prompt for product recommendations
-            prompt = f"""Based on the following user data, recommend appropriate financial products:
+            prompt = f"""Based on the following user data, recommend appropriate Wells Fargo financial products:
 
 User Profile:
 - Age: {kyc_details.get('Age', 'N/A')}
-- Income: ${kyc_details.get('Annual Income (USD)', 'N/A')}
+- Income: ${float(kyc_details.get('Annual Income (USD)', 0)):,.2f}
 - Employment: {kyc_details.get('Employment Status', 'N/A')}
+- Credit Score: {kyc_details.get('Credit Score', 'N/A')}
+- Location: {kyc_details.get('City', 'N/A')}, {kyc_details.get('State', 'N/A')}
 
 Spending Patterns:
-- Total Spending: ${spending_data.get('total_spend', 0):,.2f}
+- Total Spending: ${float(spending_data.get('total_spend', 0)):,.2f}
 - Top Categories: {', '.join(spending_categories)}
 - Top Merchants: {', '.join(top_merchants)}
+
+User Behavior Insights:
+{chr(10).join(behavior_insights)}
 
 User Interests:
 {', '.join(user_interests)}
 
-Available Credit Cards:
-{json.dumps(credit_cards, indent=2)}
+Available Wells Fargo Products:
+Credit Cards:
+{pd.read_csv('data/Wells_Fargo_Credit_Card_Details.csv').to_json(orient='records', indent=2)}
+
+Loans:
+{pd.read_csv('data/Wells_Fargo_Loan_Details.csv').to_json(orient='records', indent=2)}
 
 Please provide recommendations in the following JSON format:
 {{
     "credit_card_recommendations": [
-        {{"card_name": "string", "reason": "string"}}
+        {{
+            "card_name": "string",
+            "reason": "string",
+            "user_behavior_match": "string"
+        }}
     ],
     "loan_recommendations": [
-        {{"loan_type": "string", "reason": "string"}}
+        {{
+            "loan_type": "string",
+            "reason": "string",
+            "user_behavior_match": "string"
+        }}
     ],
     "other_recommendations": [
-        {{"product_name": "string", "reason": "string"}}
+        {{
+            "product_name": "string",
+            "reason": "string",
+            "user_behavior_match": "string"
+        }}
     ]
-}}"""
+}}
+
+Important:
+1. Only recommend Wells Fargo products from the available_products list
+2. Include specific user behavior analysis in the reason and user_behavior_match fields
+3. Focus on how the product's benefits align with the user's spending patterns and interests"""
 
             # Generate recommendations using _generate_response
             logger.debug("Generating recommendations using LLM")
@@ -150,36 +184,56 @@ Please provide recommendations in the following JSON format:
         """Generate credit card recommendations based on user data."""
         logger.info("Generating credit card recommendations")
         try:
-            # Get top merchants list
-            top_merchants = []
-            if 'top_merchants' in spending_data:
-                top_merchants = [merchant['merchant'] for merchant in spending_data['top_merchants']]
-                logger.debug(f"Found {len(top_merchants)} top merchants")
-
             # Get spending categories
             spending_categories = []
             if 'spending_by_category' in spending_data:
                 spending_categories = list(spending_data['spending_by_category'].keys())
                 logger.debug(f"Found {len(spending_categories)} spending categories")
 
+            # Get user behavior insights
+            behavior_insights = []
+            if 'spending_by_category' in spending_data:
+                top_category = spending_data.get('max_spending_category', '')
+                behavior_insights.append(f"Your highest spending category is {top_category}")
+            
+            if 'average_transaction_amount' in spending_data:
+                behavior_insights.append(f"Your average transaction amount is ${float(spending_data['average_transaction_amount']):.2f}")
+            
+            # Calculate average monthly spending from monthly_spending data
+            if 'monthly_spending' in spending_data:
+                monthly_values = list(spending_data['monthly_spending'].values())
+                avg_monthly_spend = sum(monthly_values) / len(monthly_values) if monthly_values else 0
+                behavior_insights.append(f"Your average monthly spending is ${float(avg_monthly_spend):.2f}")
+
+            # Get top merchants list
+            top_merchants = []
+            if 'top_merchants_by_spend' in spending_data:
+                top_merchants = list(spending_data['top_merchants_by_spend'].keys())
+                logger.debug(f"Found {len(top_merchants)} top merchants")
+
             # Construct prompt for credit card recommendations
-            prompt = f"""Based on the following user data, recommend appropriate credit cards:
+            prompt = f"""Based on the following user data, recommend appropriate Wells Fargo credit cards:
 
 User Profile:
 - Age: {kyc_details.get('Age', 'N/A')}
-- Income: ${kyc_details.get('Annual Income (USD)', 'N/A')}
+- Income: ${float(kyc_details.get('Annual Income (USD)', 0)):,.2f}
 - Employment: {kyc_details.get('Employment Status', 'N/A')}
+- Credit Score: {kyc_details.get('Credit Score', 'N/A')}
+- Location: {kyc_details.get('City', 'N/A')}, {kyc_details.get('State', 'N/A')}
 
 Spending Patterns:
-- Total Spending: ${spending_data.get('total_spend', 0):,.2f}
+- Total Spending: ${float(spending_data.get('total_spend', 0)):,.2f}
 - Top Categories: {', '.join(spending_categories)}
 - Top Merchants: {', '.join(top_merchants)}
+
+User Behavior Insights:
+{chr(10).join(behavior_insights)}
 
 User Interests:
 {', '.join(user_interests)}
 
-Available Credit Cards:
-{json.dumps(available_products.get('credit_cards', []), indent=2)}
+Available Wells Fargo Credit Cards:
+{pd.read_csv('data/Wells_Fargo_Credit_Card_Details.csv').to_json(orient='records', indent=2)}
 
 Please provide recommendations in the following JSON format:
 {{
@@ -190,10 +244,16 @@ Please provide recommendations in the following JSON format:
             "benefits": ["string"],
             "annual_fee": "string",
             "credit_limit": "string",
-            "interest_rate": "string"
+            "interest_rate": "string",
+            "user_behavior_match": "string"
         }}
     ]
-}}"""
+}}
+
+Important:
+1. Only recommend Wells Fargo credit cards from the available list
+2. Include specific user behavior analysis in the reason and user_behavior_match fields
+3. Focus on how the card's benefits align with the user's spending patterns and interests"""
 
             # Generate recommendations using _generate_response
             logger.debug("Generating credit card recommendations using LLM")

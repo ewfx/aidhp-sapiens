@@ -1,47 +1,35 @@
 {
-  "total_spend": 23876.809999999998,
+  "total_spend": 38130.20999999999,
+  "bank_spend": 14253.399999999998,
   "credit_card_spend": 23876.809999999998,
-  "bank_spend": 0.0,
   "spending_by_category": {
-    "Dining": 2834.0,
-    "Electronics": 450.0,
-    "Entertainment": 2977.45,
-    "Fashion": 3183.09,
-    "Fitness": 2988.68,
-    "Grocery": 1161.17,
-    "Investment": 3267.0,
-    "Shopping": 1951.18,
-    "Subscription": 1445.8600000000001,
-    "Transport": 3618.38
+    "dining": 1487.73,
+    "electronics": 1207.26,
+    "entertainment": 4086.29,
+    "fitness": 1558.97,
+    "insurance": 394.46,
+    "investments": 1327.07,
+    "shopping": 15854.13,
+    "transportation": 228.51999999999998,
+    "travel": 5120.47,
+    "uncategorized": 6865.3099999999995
   },
   "monthly_spending": {
-    "2025-01": 23876.81
+    "2024-01": 8667.17,
+    "2024-02": 5482.93,
+    "2025-01": 23876.81,
+    "2025-03": 103.3
   },
-  "current_month_spending": 0,
-  "last_month_spending": 0,
-  "month_over_month_change": 0.0,
-  "max_spending_category": "Transport",
-  "avg_transaction_amount": 238.76809999999998,
-  "top_merchants": [
-    {
-      "merchant": "Starbucks",
-      "amount": 12.5
-    },
-    {
-      "merchant": "Nike Store",
-      "amount": 120.0
-    },
-    {
-      "merchant": "Equinox Gym",
-      "amount": 200.0
-    },
-    {
-      "merchant": "Best Buy",
-      "amount": 450.0
-    },
-    {
-      "merchant": "Adidas",
-      "amount": 866.7
-    }
-  ]
+  "current_month_spend": 103.3,
+  "last_month_spend": 0,
+  "month_over_month_change": 0,
+  "max_spending_category": "shopping",
+  "average_transaction_amount": 189.70253731343283,
+  "top_merchants_by_spend": {
+    "Amazon": 4975.73,
+    "Apple": 3145.81,
+    "Uber": 2840.4300000000003,
+    "Target": 2718.32,
+    "Whole Foods": 2201.14
+  }
 }

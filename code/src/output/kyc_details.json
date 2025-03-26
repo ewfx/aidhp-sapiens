@@ -2,7 +2,7 @@
   "Customer ID": "CUST001",
   "Full Name": "John Doe",
   "Date of Birth": "1999-05-15",
-  "Age": 25,
+  "Age": 25.0,
   "Gender": "Male",
   "Marital Status": "Single",
   "Nationality": "American",
@@ -20,7 +20,7 @@
   "Bank Account Number": 9876543210,
   "Bank Branch": "San Francisco Main",
   "Bank IFSC Code": "WFBIUS6S",
-  "Credit Score": 780,
+  "Credit Score": 780.0,
   "KYC Status": "Verified",
   "Verification Date": "2024-01-10",
   "Document Type": "Passport",
@@ -52,5 +52,7 @@
       "Experiences",
       "Health & Wellness"
     ]
-  }
+  },
+  "Interests": "shopping, finance, food, entertainment, fitness, lifestyle, travel, education, outdoor, technology",
+  "Hobbies": "shopping, finance, food, entertainment, fitness, lifestyle, travel, education, outdoor, technology"
 }
