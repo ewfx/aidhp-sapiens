@@ -2,23 +2,15 @@
   "credit_card_recommendations": [
     {
       "card_name": "Wells Fargo Autograph Card",
-      "reason": "The user's spending patterns indicate a high interest in dining and entertainment categories, and the Autograph Card offers 3x points in these categories, making it the most suitable card for this user."
+      "reason": "The user's highest spending category is shopping and their average transaction amount is high. The Autograph Card offers 3x points on dining, travel, gas & streaming which aligns with the user's interests and spending patterns.",
+      "user_behavior_match": "highest spending category: shopping, average transaction amount: $189.70"
     },
     {
       "card_name": "Wells Fargo Active Cash Card",
-      "reason": "The user's spending patterns also indicate a significant amount spent on grocery, which is a category where the Active Cash Card offers unlimited 2% cashback, making it a good secondary card option."
+      "reason": "The user's income level and credit score suggest they may qualify for this card with a $10,000 credit limit. The unlimited 2% cashback on all purchases is an attractive feature for someone with high spending.",
+      "user_behavior_match": "income: $150,000.00, credit score: 780.0"
     }
   ],
-  "loan_recommendations": [
-    {
-      "loan_type": "Personal Loan",
-      "reason": "Based on the user's high income, it would be beneficial for them to consider a personal loan to consolidate high-interest debts or make a large purchase."
-    }
-  ],
-  "other_recommendations": [
-    {
-      "product_name": "Wells Fargo Online Savings Account",
-      "reason": "Given the user's income level, it would be recommended for them to consider opening a high-yield savings account to save for future expenses or emergencies."
-    }
-  ]
+  "loan_recommendations": [],
+  "other_recommendations": []
 }

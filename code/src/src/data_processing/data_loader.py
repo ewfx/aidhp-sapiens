@@ -1,7 +1,10 @@
 import pandas as pd
 from pathlib import Path
 import logging
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
+import json
+from src.utils.logger import setup_logger
+from config.config import DATA_FILES
 
 # ANSI color codes
 BLUE = "\033[94m"
@@ -10,10 +13,13 @@ YELLOW = "\033[93m"
 RED = "\033[91m"
 END = "\033[0m"
 
-from src.config import DATA_FILES
+# Set up logging
+logger = setup_logger(__name__)
 
 class FinancialDataLoader:
     def __init__(self):
+        """Initialize the financial data loader."""
+        logger.info("Initializing FinancialDataLoader")
         self.transactions = None
         self.credit_card_transactions = None
         self.social_media = None
@@ -23,53 +29,121 @@ class FinancialDataLoader:
         self.credit_cards = None
         self.loans = None
         self.credit_card_list = None
+        logger.debug("Data loader initialized")
 
-    def load_all_data(self) -> Dict[str, pd.DataFrame]:
-        """Load all required data files."""
+    def load_all_data(self) -> Dict[str, Any]:
+        """Load all financial data from various sources."""
+        logger.info("Loading all financial data")
         try:
-            print(f"{BLUE}Loading transaction data...{END}")
-            self.transactions = self._load_transaction_data(DATA_FILES["transactions"])
+            # Load social media data as DataFrame
+            social_media_df = pd.read_csv(DATA_FILES["social_media"]) if DATA_FILES["social_media"].exists() else pd.DataFrame()
             
-            print(f"{BLUE}Loading credit card transactions...{END}")
-            self.credit_card_transactions = self._load_transaction_data(DATA_FILES["credit_card_transactions"])
+            # Load KYC details
+            kyc_details = self._load_kyc_details()
             
-            print(f"{BLUE}Loading KYC details...{END}")
-            self.kyc = self._load_kyc_details()
-            
-            print(f"{BLUE}Loading receiver categories...{END}")
-            self.receiver_categories = self._load_receiver_categories()
-            
-            print(f"{BLUE}Loading social media data...{END}")
-            self.social_media = self._load_social_media_data()
-            
-            print(f"{BLUE}Loading credit cards...{END}")
-            self.credit_cards = self._load_credit_cards()
-            
-            print(f"{BLUE}Loading loans...{END}")
-            self.loans = self._load_loans()
-            
-            print(f"{BLUE}Loading credit card list...{END}")
-            self.credit_card_list = self._load_credit_card_list()
-            
-            print(f"{BLUE}Loading emails...{END}")
-            self.emails = self._load_emails()
-            
-            print(f"{GREEN}All data loaded successfully!{END}")
-            
-            return {
-                "transactions": self.transactions,
-                "credit_card_transactions": self.credit_card_transactions,
-                "social_media": self.social_media,
-                "kyc": self.kyc,
-                "emails": self.emails,
-                "receiver_categories": self.receiver_categories,
-                "credit_cards": self.credit_cards,
-                "loans": self.loans,
-                "credit_card_list": self.credit_card_list
+            data = {
+                'transactions': self._load_transaction_data(DATA_FILES["transactions"]),
+                'credit_card_transactions': self._load_transaction_data(DATA_FILES["credit_card_transactions"]),
+                'social_media': social_media_df,
+                'kyc': kyc_details,  # Pass KYC details directly
+                'receiver_categories': self._load_receiver_categories(),
+                'credit_cards': self._load_credit_cards_df(),
+                'loans': self._load_loans(),
+                'credit_card_list': self._load_credit_card_list(),
+                'emails': self._load_emails()
             }
+            logger.info("Successfully loaded all financial data")
+            return data
         except Exception as e:
-            print(f"{RED}Error loading data: {str(e)}{END}")
+            logger.error(f"Error loading financial data: {str(e)}")
             raise
+
+    def _load_credit_cards(self) -> List[Dict[str, Any]]:
+        """Load credit cards data from CSV file."""
+        logger.debug("Loading credit cards data")
+        try:
+            file_path = DATA_FILES["credit_card_list"]
+            if not file_path.exists():
+                logger.warning(f"Credit cards file not found: {file_path}")
+                return []
+                
+            df = pd.read_csv(file_path)
+            credit_cards = df.to_dict('records')
+            logger.info(f"Loaded {len(credit_cards)} credit cards")
+            return credit_cards
+            
+        except Exception as e:
+            logger.error(f"Error loading credit cards data: {str(e)}")
+            return []
+
+    def _load_spending_data(self) -> Dict[str, Any]:
+        """Load spending data from JSON file."""
+        logger.debug("Loading spending data")
+        try:
+            file_path = DATA_FILES["transactions"]
+            if not file_path.exists():
+                logger.warning(f"Spending data file not found: {file_path}")
+                return {}
+                
+            df = pd.read_csv(file_path)
+            spending_data = df.to_dict('records')
+            logger.info("Loaded spending data successfully")
+            return spending_data
+            
+        except Exception as e:
+            logger.error(f"Error loading spending data: {str(e)}")
+            return {}
+
+    def _load_kyc_details(self) -> Dict[str, Any]:
+        """Load KYC details from CSV file."""
+        logger.debug("Loading KYC details")
+        try:
+            file_path = DATA_FILES["kyc"]
+            if not file_path.exists():
+                logger.warning(f"KYC details file not found: {file_path}")
+                return {}
+                
+            df = pd.read_csv(file_path)
+            # Convert the DataFrame to a dictionary, handling both single and multiple rows
+            if len(df) > 0:
+                kyc_details = df.iloc[0].to_dict()  # Take first row if multiple exist
+                # Convert numeric columns
+                numeric_columns = ['Age', 'Income', 'Credit Score']
+                for col in numeric_columns:
+                    if col in kyc_details:
+                        try:
+                            kyc_details[col] = float(kyc_details[col])
+                        except (ValueError, TypeError):
+                            pass
+                logger.info("Loaded KYC details successfully")
+                return kyc_details
+            return {}
+            
+        except Exception as e:
+            logger.error(f"Error loading KYC details: {str(e)}")
+            return {}
+
+    def _load_social_media_data(self, file_path: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Load social media data from CSV file."""
+        logger.debug("Loading social media data")
+        try:
+            if file_path:
+                path = Path(file_path)
+            else:
+                path = DATA_FILES["social_media"]
+                
+            if not path.exists():
+                logger.warning(f"Social media data file not found: {path}")
+                return []
+                
+            df = pd.read_csv(path)
+            social_data = df.to_dict('records')
+            logger.info(f"Loaded {len(social_data)} social media posts")
+            return social_data
+            
+        except Exception as e:
+            logger.error(f"Error loading social media data: {str(e)}")
+            return []
 
     def _load_transaction_data(self, file_path: Path) -> pd.DataFrame:
         """Load transaction data from CSV file."""
@@ -92,14 +166,6 @@ class FinancialDataLoader:
             print(f"{RED}Error loading transaction data from {file_path}: {str(e)}{END}")
             return pd.DataFrame()
 
-    def _load_kyc_details(self) -> pd.DataFrame:
-        """Load KYC details from CSV file."""
-        try:
-            return pd.read_csv(DATA_FILES["kyc"])
-        except Exception as e:
-            print(f"{RED}Error loading KYC details: {str(e)}{END}")
-            return pd.DataFrame()
-
     def _load_receiver_categories(self) -> pd.DataFrame:
         """Load receiver categories from CSV file."""
         try:
@@ -108,20 +174,10 @@ class FinancialDataLoader:
             print(f"{RED}Error loading receiver categories: {str(e)}{END}")
             return pd.DataFrame()
 
-    def _load_social_media_data(self, custom_file: str = None) -> pd.DataFrame:
-        """Load social media data from CSV file."""
-        try:
-            if custom_file:
-                return pd.read_csv(custom_file)
-            return pd.read_csv(DATA_FILES["social_media"])
-        except Exception as e:
-            print(f"{RED}Error loading social media data: {str(e)}{END}")
-            return pd.DataFrame()
-
-    def _load_credit_cards(self) -> pd.DataFrame:
+    def _load_credit_cards_df(self) -> pd.DataFrame:
         """Load credit card details from CSV file."""
         try:
-            df = pd.read_csv(DATA_FILES["credit_cards"])
+            df = pd.read_csv(DATA_FILES["available_credit_cards"])
             # Convert numeric columns
             numeric_columns = ['Annual Fee (USD)', 'Interest Rate (%)']
             for col in numeric_columns:
@@ -135,7 +191,7 @@ class FinancialDataLoader:
     def _load_loans(self) -> pd.DataFrame:
         """Load loan details from CSV file."""
         try:
-            df = pd.read_csv(DATA_FILES["loans"])
+            df = pd.read_csv(DATA_FILES["available_loans"])
             # Convert numeric columns
             numeric_columns = ['Interest Rate (%)', 'Loan Amount (USD)', 'Monthly EMI (USD)']
             for col in numeric_columns:

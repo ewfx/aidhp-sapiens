@@ -4,14 +4,20 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent.parent
 DATA_DIR = BASE_DIR / "data"
 OUTPUT_DIR = BASE_DIR / "output"
+MODELS_DIR = BASE_DIR / "models"
 
-# Data file names
+# Define data file paths
 DATA_FILES = {
-    "transactions": "account_statement.csv",
-    "credit_card": "credit_card_transactions.csv",
-    "kyc": "KYC_Details.csv",
-    "social_media": "social_media_posts.csv",
-    "emails": "emails_to_wells_fargo.csv"
+    "transactions": DATA_DIR / "Account_Statement.csv",
+    "credit_card_transactions": DATA_DIR / "credit_card_transactions.csv",
+    "social_media": DATA_DIR / "social_media_posts.csv",
+    "new_social_media": DATA_DIR / "new_social_media_posts.csv",
+    "kyc": DATA_DIR / "KYC_Details.csv",
+    "emails": DATA_DIR / "emails_to_wells_fargo.csv",
+    "receiver_categories": DATA_DIR / "Receiver_vs_Category.csv",
+    "available_credit_cards": DATA_DIR / "Wells_Fargo_Credit_Card_Details.csv",
+    "available_loans": DATA_DIR / "Wells_Fargo_Loan_Details.csv",
+    "credit_card_list": DATA_DIR / "credit_card_list.csv"
 }
 
 # Analysis settings
@@ -25,6 +31,11 @@ ANALYSIS_SETTINGS = {
     }
 }
 
+
+# Model paths
+LLM_MODEL_PATH = MODELS_DIR / "mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+
+
 # Output settings
 OUTPUT_SETTINGS = {
     "insights_file": "insights.txt",
@@ -33,5 +44,5 @@ OUTPUT_SETTINGS = {
 }
 
 # Create necessary directories
-for directory in [DATA_DIR, OUTPUT_DIR]:
+for directory in [DATA_DIR, OUTPUT_DIR, MODELS_DIR]:
     directory.mkdir(exist_ok=True) 

@@ -2,33 +2,25 @@
   "recommendations": [
     {
       "card_name": "Wells Fargo Autograph Card",
-      "reason": "The user's top spending categories align with the card's bonus rewards and their interests.",
+      "reason": "The Wells Fargo Autograph Card's 3x points on dining aligns with your highest spending category, shopping. Additionally, you have shown a strong interest in food and dining.",
       "benefits": [
-        "3x points on dining, travel, gas & streaming"
+        "3x points on dining"
       ],
-      "annual_fee": "0 USD",
-      "credit_limit": "12000 USD",
-      "interest_rate": "19.99%"
-    },
-    {
-      "card_name": "Wells Fargo BILT Card",
-      "reason": "The user has significant spending in the subscription and streaming categories and the card's benefits align with their interests.",
-      "benefits": [
-        "2x points on travel & dining"
-      ],
-      "annual_fee": "0 USD",
-      "credit_limit": "9000 USD",
-      "interest_rate": "21.49%"
+      "annual_fee": "0",
+      "credit_limit": "12000",
+      "interest_rate": "19.99",
+      "user_behavior_match": "high spending category: shopping, interest: food"
     },
     {
       "card_name": "Wells Fargo Active Cash Card",
-      "reason": "The user's high income and total spending amount make the unlimited 2% cashback an attractive benefit.",
+      "reason": "The Wells Fargo Active Cash Card's unlimited 2% cashback on all purchases aligns with your high average monthly spending and can help maximize rewards for your spending patterns.",
       "benefits": [
         "Unlimited 2% cashback on all purchases"
       ],
-      "annual_fee": "0 USD",
-      "credit_limit": "10000 USD",
-      "interest_rate": "20.99%"
+      "annual_fee": "0",
+      "credit_limit": "10000",
+      "interest_rate": "20.99",
+      "user_behavior_match": "high average monthly spending"
     }
   ]
 }
