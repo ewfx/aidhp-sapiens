@@ -4,6 +4,7 @@ from typing import Dict, Any, List
 from pathlib import Path
 from datetime import datetime, timedelta
 import logging
+from src.utils.logger import setup_logger
 
 # ANSI color codes
 BLUE = "\033[94m"
@@ -12,9 +13,13 @@ YELLOW = "\033[93m"
 RED = "\033[91m"
 END = "\033[0m"
 
+# Set up logging
+logger = setup_logger(__name__)
+
 class DataExtractor:
     def __init__(self, data_dict):
         """Initialize the DataExtractor with loaded data."""
+        logger.info("Initializing DataExtractor")
         print(f"{BLUE}Initializing DataExtractor...{END}")
         self.transactions = data_dict.get('transactions', pd.DataFrame())
         self.credit_card_transactions = data_dict.get('credit_card_transactions', pd.DataFrame())
@@ -67,10 +72,11 @@ class DataExtractor:
                 # Rename back to Merchant
                 self.credit_card_transactions = self.credit_card_transactions.rename(columns={'Receiver': 'Merchant'})
         
-        print(f"{GREEN}DataExtractor initialized successfully!{END}")
+        logger.debug("DataExtractor initialized successfully")
     
     def get_spending_summary(self) -> Dict[str, Any]:
         """Get a summary of user's spending patterns."""
+        logger.info("Generating spending summary")
         try:
             print(f"{BLUE}Generating spending summary...{END}")
             # Initialize spending data
@@ -174,9 +180,11 @@ class DataExtractor:
                 ]
             
             print(f"{GREEN}Spending summary generated successfully!{END}")
+            logger.info("Successfully generated spending summary")
             return spending_data
         except Exception as e:
             print(f"{RED}Error generating spending summary: {str(e)}{END}")
+            logger.error(f"Error generating spending summary: {str(e)}")
             return {
                 'total_spend': 0.0,
                 'credit_card_spend': 0.0,
@@ -193,6 +201,7 @@ class DataExtractor:
     
     def get_kyc_details(self) -> Dict[str, Any]:
         """Extract KYC details and add demographic insights."""
+        logger.info("Extracting KYC details")
         try:
             print(f"{BLUE}Extracting KYC details...{END}")
             if self.kyc.empty:
@@ -212,9 +221,11 @@ class DataExtractor:
             }
             
             print(f"{GREEN}KYC details extracted successfully!{END}")
+            logger.debug("Successfully extracted KYC details")
             return {**kyc_data, **demographic_insights}
         except Exception as e:
             print(f"{RED}Error extracting KYC details: {str(e)}{END}")
+            logger.error(f"Error extracting KYC details: {str(e)}")
             return {}
     
     def _get_age_group(self, age: int) -> str:
@@ -350,6 +361,7 @@ class DataExtractor:
     
     def get_available_products(self) -> Dict[str, Any]:
         """Get available Wells Fargo products."""
+        logger.info("Getting available products")
         try:
             print(f"{BLUE}Getting available products...{END}")
             
@@ -365,13 +377,16 @@ class DataExtractor:
             }
             
             print(f"{GREEN}Available products retrieved successfully!{END}")
+            logger.info("Successfully retrieved available products")
             return products
         except Exception as e:
             print(f"{RED}Error getting available products: {str(e)}{END}")
+            logger.error(f"Error getting available products: {str(e)}")
             return {"credit_cards": [], "loans": []}
 
     def get_user_interests(self):
         """Extract user interests based on spending patterns and social media."""
+        logger.info("Extracting user interests")
         interests = set()
         
         try:
@@ -406,9 +421,11 @@ class DataExtractor:
                             interests.add(category)
             
             print(f"{GREEN}User interests analyzed successfully!{END}")
+            logger.info("Successfully analyzed user interests")
             return list(interests)
         except Exception as e:
             print(f"{RED}Error extracting user interests: {str(e)}{END}")
+            logger.error(f"Error extracting user interests: {str(e)}")
             return []
         
     def get_credit_profile(self):

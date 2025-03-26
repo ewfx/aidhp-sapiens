@@ -5,6 +5,7 @@ from pathlib import Path
 from src.data_processing.data_loader import FinancialDataLoader
 from src.data_processing.data_extractor import DataExtractor
 from src.ai.llm_interaction import LLMInteraction
+from src.voice.voice_processor import VoiceProcessor
 
 # ANSI color codes
 BLUE = "\033[94m"
@@ -89,11 +90,25 @@ def update_recommendations(new_posts_file: str):
         print(f"{RED}Error updating recommendations: {str(e)}{END}")
         raise
 
+def voice_interaction(audio_file: str):
+    """Start voice interaction mode with a specific audio file."""
+    try:
+        processor = VoiceProcessor()
+        processor.process_audio_file(audio_file)
+    except Exception as e:
+        print(f"{RED}Error in voice interaction: {str(e)}{END}")
+        raise
+
 def main():
     # Parse arguments
     parser = argparse.ArgumentParser(description='Personalized Banking Services')
     parser.add_argument('--update-social', type=str, help='Update recommendations with new social media posts file')
+    parser.add_argument('--voice', type=str, help='Process a specific audio file (WAV, MP3, or M4A format)')
     args = parser.parse_args()
+
+    if args.voice:
+        voice_interaction(args.voice)
+        return
 
     if args.update_social:
         update_recommendations(args.update_social)

@@ -1,7 +1,9 @@
 import pandas as pd
 from pathlib import Path
 import logging
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
+import json
+from src.utils.logger import setup_logger
 
 # ANSI color codes
 BLUE = "\033[94m"
@@ -12,8 +14,13 @@ END = "\033[0m"
 
 from src.config import DATA_FILES
 
+# Set up logging
+logger = setup_logger(__name__)
+
 class FinancialDataLoader:
     def __init__(self):
+        """Initialize the financial data loader."""
+        logger.info("Initializing FinancialDataLoader")
         self.transactions = None
         self.credit_card_transactions = None
         self.social_media = None
@@ -23,53 +30,101 @@ class FinancialDataLoader:
         self.credit_cards = None
         self.loans = None
         self.credit_card_list = None
+        self.data_dir = Path("data")
+        self.data_dir.mkdir(exist_ok=True)
+        logger.debug("Data directory initialized")
 
-    def load_all_data(self) -> Dict[str, pd.DataFrame]:
-        """Load all required data files."""
+    def load_all_data(self) -> Dict[str, Any]:
+        """Load all financial data from various sources."""
+        logger.info("Loading all financial data")
         try:
-            print(f"{BLUE}Loading transaction data...{END}")
-            self.transactions = self._load_transaction_data(DATA_FILES["transactions"])
-            
-            print(f"{BLUE}Loading credit card transactions...{END}")
-            self.credit_card_transactions = self._load_transaction_data(DATA_FILES["credit_card_transactions"])
-            
-            print(f"{BLUE}Loading KYC details...{END}")
-            self.kyc = self._load_kyc_details()
-            
-            print(f"{BLUE}Loading receiver categories...{END}")
-            self.receiver_categories = self._load_receiver_categories()
-            
-            print(f"{BLUE}Loading social media data...{END}")
-            self.social_media = self._load_social_media_data()
-            
-            print(f"{BLUE}Loading credit cards...{END}")
-            self.credit_cards = self._load_credit_cards()
-            
-            print(f"{BLUE}Loading loans...{END}")
-            self.loans = self._load_loans()
-            
-            print(f"{BLUE}Loading credit card list...{END}")
-            self.credit_card_list = self._load_credit_card_list()
-            
-            print(f"{BLUE}Loading emails...{END}")
-            self.emails = self._load_emails()
-            
-            print(f"{GREEN}All data loaded successfully!{END}")
-            
-            return {
-                "transactions": self.transactions,
-                "credit_card_transactions": self.credit_card_transactions,
-                "social_media": self.social_media,
-                "kyc": self.kyc,
-                "emails": self.emails,
-                "receiver_categories": self.receiver_categories,
-                "credit_cards": self.credit_cards,
-                "loans": self.loans,
-                "credit_card_list": self.credit_card_list
+            data = {
+                'credit_cards': self._load_credit_cards(),
+                'spending_data': self._load_spending_data(),
+                'kyc_details': self._load_kyc_details(),
+                'social_media': self._load_social_media_data()
             }
+            logger.info("Successfully loaded all financial data")
+            return data
         except Exception as e:
-            print(f"{RED}Error loading data: {str(e)}{END}")
+            logger.error(f"Error loading financial data: {str(e)}")
             raise
+
+    def _load_credit_cards(self) -> List[Dict[str, Any]]:
+        """Load credit cards data from CSV file."""
+        logger.debug("Loading credit cards data")
+        try:
+            file_path = self.data_dir / "credit_cards.csv"
+            if not file_path.exists():
+                logger.warning(f"Credit cards file not found: {file_path}")
+                return []
+                
+            df = pd.read_csv(file_path)
+            credit_cards = df.to_dict('records')
+            logger.info(f"Loaded {len(credit_cards)} credit cards")
+            return credit_cards
+            
+        except Exception as e:
+            logger.error(f"Error loading credit cards data: {str(e)}")
+            return []
+
+    def _load_spending_data(self) -> Dict[str, Any]:
+        """Load spending data from JSON file."""
+        logger.debug("Loading spending data")
+        try:
+            file_path = self.data_dir / "spending_data.json"
+            if not file_path.exists():
+                logger.warning(f"Spending data file not found: {file_path}")
+                return {}
+                
+            with open(file_path, 'r') as f:
+                spending_data = json.load(f)
+            logger.info("Loaded spending data successfully")
+            return spending_data
+            
+        except Exception as e:
+            logger.error(f"Error loading spending data: {str(e)}")
+            return {}
+
+    def _load_kyc_details(self) -> Dict[str, Any]:
+        """Load KYC details from JSON file."""
+        logger.debug("Loading KYC details")
+        try:
+            file_path = self.data_dir / "kyc_details.json"
+            if not file_path.exists():
+                logger.warning(f"KYC details file not found: {file_path}")
+                return {}
+                
+            with open(file_path, 'r') as f:
+                kyc_details = json.load(f)
+            logger.info("Loaded KYC details successfully")
+            return kyc_details
+            
+        except Exception as e:
+            logger.error(f"Error loading KYC details: {str(e)}")
+            return {}
+
+    def _load_social_media_data(self, file_path: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Load social media data from JSON file."""
+        logger.debug("Loading social media data")
+        try:
+            if file_path:
+                path = Path(file_path)
+            else:
+                path = self.data_dir / "social_media_posts.json"
+                
+            if not path.exists():
+                logger.warning(f"Social media data file not found: {path}")
+                return []
+                
+            with open(path, 'r') as f:
+                social_data = json.load(f)
+            logger.info(f"Loaded {len(social_data)} social media posts")
+            return social_data
+            
+        except Exception as e:
+            logger.error(f"Error loading social media data: {str(e)}")
+            return []
 
     def _load_transaction_data(self, file_path: Path) -> pd.DataFrame:
         """Load transaction data from CSV file."""
@@ -92,14 +147,6 @@ class FinancialDataLoader:
             print(f"{RED}Error loading transaction data from {file_path}: {str(e)}{END}")
             return pd.DataFrame()
 
-    def _load_kyc_details(self) -> pd.DataFrame:
-        """Load KYC details from CSV file."""
-        try:
-            return pd.read_csv(DATA_FILES["kyc"])
-        except Exception as e:
-            print(f"{RED}Error loading KYC details: {str(e)}{END}")
-            return pd.DataFrame()
-
     def _load_receiver_categories(self) -> pd.DataFrame:
         """Load receiver categories from CSV file."""
         try:
@@ -108,17 +155,7 @@ class FinancialDataLoader:
             print(f"{RED}Error loading receiver categories: {str(e)}{END}")
             return pd.DataFrame()
 
-    def _load_social_media_data(self, custom_file: str = None) -> pd.DataFrame:
-        """Load social media data from CSV file."""
-        try:
-            if custom_file:
-                return pd.read_csv(custom_file)
-            return pd.read_csv(DATA_FILES["social_media"])
-        except Exception as e:
-            print(f"{RED}Error loading social media data: {str(e)}{END}")
-            return pd.DataFrame()
-
-    def _load_credit_cards(self) -> pd.DataFrame:
+    def _load_credit_cards_df(self) -> pd.DataFrame:
         """Load credit card details from CSV file."""
         try:
             df = pd.read_csv(DATA_FILES["credit_cards"])
